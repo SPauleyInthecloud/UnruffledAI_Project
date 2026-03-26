@@ -96,11 +96,11 @@ docker-compose exec web python manage.py createsuperuser
 open http://localhost:8000
 
 💡 The Problem This Solves
-Remote work burnout costs companies an estimated $125–$190 billion annually in healthcare spending alone, according to Harvard Business Review. For distributed teams at companies like Atlassian, Airbnb, and GitHub — where async collaboration is the norm — the warning signs are even harder to detect through traditional management.
+Remote work burnout costs companies an estimated $125–$190 billion annually in healthcare spending alone, according to Harvard Business Review. For distributed teams at companies like Atlassian, Airbnb, and GitHub, where async collaboration is the norm, the warning signs are even harder to detect through traditional management.
 UnruffledAI gives teams an early warning system built on real data, not gut feelings.
 
 👩🏽‍💻 About The Developer
-Built by Shateria Pauley — DevOps & AI Engineer, BS Information Technology (Web Applications), Middle Georgia State University.
+Built by SPauley — DevOps & AI Engineer, BS Information Technology (Web Applications), Middle Georgia State University.
 
 🐙 GitHub: github.com/spauleyinthecloud
 💼 LinkedIn: linkedin.com/in/Shateriapauley
