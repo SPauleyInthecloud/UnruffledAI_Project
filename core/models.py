@@ -2,9 +2,13 @@ from django.db import models
 
 
 # -------------------------------------------------------
-# 1. USER PROFILE (standalone — no Django auth)
+# 1. USER PROFILE (standalone — after auth integration, link to User model)
 # -------------------------------------------------------
+from django.db import models
+from django.contrib.auth.models import User
+
 class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     full_name = models.CharField(max_length=100)
 

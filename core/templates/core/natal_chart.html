@@ -1,105 +1,120 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Natal Chart</title>
+    <title>Natal Chart • UnruffledAI</title>
 
-    <link rel="stylesheet" href="/static/css/natal.css">
+    <link rel="stylesheet" href="{% static 'css/natal-chart.css' %}">
 </head>
 
-<body>
+<body class="dark-bg">
 
-<div class="container">
-
-    <header class="page-header">
-        <h1>{{ profile.full_name }} — Natal Chart</h1>
-        <p class="subtitle">Your cosmic blueprint and planetary alignment</p>
-    </header>
-
-    <!-- Big Three Overview -->
-    <section class="card">
-        <h2>Your Big Three</h2>
-        <div class="big-three">
-            <div><strong>Sun:</strong> {{ chart.sun }}</div>
-            <div><strong>Moon:</strong> {{ chart.moon }}</div>
-            <div><strong>Rising:</strong> {{ chart.rising }}</div>
+    <!-- TOP NAVIGATION -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <img src="{% static 'img/logo.png' %}" class="nav-logo">
+            <span class="nav-title">UnruffledAI</span>
         </div>
-    </section>
 
-    <!-- Daily Guidance -->
-    <section class="card">
-        <h2>Daily Guidance</h2>
-        {% if chart.moon_phase %}
-            <p><strong>Moon Phase:</strong> {{ chart.moon_phase.phase }}</p>
-            <p>{{ chart.moon_phase.meaning }}</p>
-        {% else %}
-            <p>No guidance available.</p>
-        {% endif %}
-    </section>
+        <div class="nav-links">
+            <a href="/dashboard/">Dashboard</a>
+            <a href="/reports/">Reports</a>
+            <a href="/natal/{{ profile.full_name }}/" class="active">Natal Chart</a>
+            <a href="/settings/">Settings</a>
+            <a href="/logout/" class="logout-btn">Logout</a>
+        </div>
+    </nav>
 
-    <!-- Transit Alerts -->
-    <section class="card">
-        <h2>Current Transit Alerts</h2>
+    <!-- PAGE CONTAINER -->
+    <main class="natal-container">
 
-        {% if transit_alerts %}
-            <ul class="transit-list">
+        <!-- HEADER -->
+        <header class="page-header">
+            <h1>Your Natal Chart</h1>
+            <p>Explore your astrological blueprint and today's cosmic influences.</p>
+        </header>
+
+        <div class="two-column">
+
+            <!-- LEFT COLUMN (Birth Chart Details) -->
+            <section class="card">
+                <h2>Birth Chart Details</h2>
+
+                <div class="info-grid">
+                    <div class="label">Date:</div><div>{{ chart.birth_date }}</div>
+                    <div class="label">Time:</div><div>{{ chart.birth_time }}</div>
+                    <div class="label">Place:</div><div>{{ chart.birth_location }}</div>
+                </div>
+
+                <h3 class="sub-heading">The Big Three</h3>
+
+                <div class="big-three">
+                    <div class="big-box sun">
+                        ☀️ Sun Sign <span>{{ chart.sun }}</span>
+                    </div>
+
+                    <div class="big-box moon">
+                        🌙 Moon Sign <span>{{ chart.moon }}</span>
+                    </div>
+
+                    <div class="big-box rising">
+                        ↗️ Rising Sign <span>{{ chart.rising }}</span>
+                    </div>
+                </div>
+
+                <h3 class="sub-heading">Key Aspects</h3>
+                <p>{{ chart.key_aspects }}</p>
+
+                <h3 class="sub-heading">House Cusps</h3>
+                <p>{{ chart.house_cusps }}</p>
+            </section>
+
+
+            <!-- RIGHT COLUMN (Transits + Aspects + Planets) -->
+            <section class="card">
+                <h2>Today's Transits</h2>
+                <p class="small-desc">Current planetary movements affecting your chart today.</p>
+
                 {% for t in transit_alerts %}
-                <li>
-                    <strong>{{ t.transit_planet }}</strong> → House {{ t.natal_house }}
-                    <span class="severity {{ t.severity|lower }}">{{ t.severity }}</span>
-                    <p>{{ t.description }}</p>
-                </li>
+                <div class="transit-item">
+                    <div class="transit-header">
+                        <h4>{{ t.transit_planet }} in {{ t.natal_house }} House</h4>
+                        <span class="status active">Active</span>
+                    </div>
+                    <p class="transit-desc">{{ t.description }}</p>
+                </div>
                 {% endfor %}
-            </ul>
-        {% else %}
-            <p>No high-impact transits at this time.</p>
-        {% endif %}
-    </section>
+            </section>
 
-    <!-- Planet Details -->
-    <section class="card">
-        <h2>Planetary Positions</h2>
+            <section class="card">
+                <h2>Planetary Positions</h2>
+                <ul class="list">
+                    {% for p in chart.planets %}
+                    <li>
+                        <strong>{{ p.name }}</strong> — {{ p.sign }}
+                        <span class="right">{{ p.degree }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
 
-        <ul class="planet-list">
-        {% for p in chart.planets %}
-            <li>
-                <strong>{{ p.name }}</strong> — {{ p.sign }}
-                <span class="degree">{{ p.degree }}</span>
-            </li>
-        {% endfor %}
-        </ul>
-    </section>
+            <section class="card">
+                <h2>Aspects</h2>
+                <ul class="list">
+                    {% for a in chart.aspects %}
+                    <li>
+                        <strong>{{ a.planet_1 }}</strong> {{ a.aspect }} 
+                        <strong>{{ a.planet_2 }}</strong>
+                        <span class="right">orb: {{ a.orb }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
 
-    <!-- Houses -->
-    <section class="card">
-        <h2>Your Houses</h2>
-        <ul class="house-list">
-        {% for h in chart.houses %}
-            <li><strong>House {{ forloop.counter }}:</strong> {{ h.sign }}</li>
-        {% endfor %}
-        </ul>
-    </section>
+        </div>
 
-    <!-- Aspects -->
-    <section class="card">
-        <h2>Aspects</h2>
-
-        {% if chart.aspects %}
-        <ul class="aspect-list">
-            {% for a in chart.aspects %}
-            <li>
-                <strong>{{ a.planet_1 }}</strong> {{ a.aspect }} <strong>{{ a.planet_2 }}</strong>
-                <span class="orb">orb: {{ a.orb }}</span>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-            <p>No major aspects detected.</p>
-        {% endif %}
-    </section>
-
-</div>
+    </main>
 
 </body>
 </html>
-

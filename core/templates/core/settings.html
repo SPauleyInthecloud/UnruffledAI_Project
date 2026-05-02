@@ -1,82 +1,161 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Settings</title>
+    <title>Settings • UnruffledAI</title>
 
-    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <link rel="stylesheet" href="{% static 'css/settings.css' %}">
 </head>
 
-<body>
+<body class="dark-bg">
 
-<div class="container">
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <img src="{% static 'img/unruffled_logo.png' %}" class="nav-logo">
+            <span class="nav-title">UnruffledAI</span>
+        </div>
 
-    <header class="page-header">
-        <h1>Settings</h1>
-        <p class="subtitle">Customize your wellness experience</p>
-    </header>
+        <div class="nav-links">
+            <a href="/dashboard/">Dashboard</a>
+            <a href="/reports/">Reports</a>
+            <a href="/settings/" class="active">Settings</a>
+            <a href="/natal/">Natal Chart</a>
+            <a href="/logout/" class="logout-btn">Logout</a>
+        </div>
+      </nav>
 
-    <section class="card">
-        <h2>Notifications</h2>
 
-        <form method="POST">
-            {% csrf_token %}
+    <!-- MAIN CONTENT -->
+    <main class="settings-container">
 
-            <label class="toggle">
-                <input type="checkbox" name="notify_burnout" {% if user_pref.notify_burnout_risk %}checked{% endif %}>
-                Burnout Risk Alerts
-            </label>
+        <!-- PAGE HEADER -->
+        <header class="page-header">
+            <h1>Settings</h1>
+            <p>Manage your preferences, devices, and privacy options.</p>
+        </header>
 
-            <label class="toggle">
-                <input type="checkbox" name="notify_astrology" {% if user_pref.notify_astrological_events %}checked{% endif %}>
-                Astrology Event Alerts
-            </label>
+        <!-- FEEDBACK CARD -->
+        <section class="card">
+            <h2 class="section-title">Send Feedback</h2>
+            <p class="section-sub">We’d love to hear your thoughts and feature ideas.</p>
 
-            <label class="toggle">
-                <input type="checkbox" name="device_sync" {% if user_pref.device_sync_enabled %}checked{% endif %}>
-                Device Sync (Fitbit / Apple Watch)
-            </label>
+            <form method="POST" action="{% url 'submit_feedback' %}">
+                {% csrf_token %}
 
-            <label class="toggle">
-                <input type="checkbox" name="dark_mode" {% if user_pref.dark_mode %}checked{% endif %}>
-                Enable Dark Mode
-            </label>
+                <label>Your Feedback</label>
+                <textarea name="feedback" required></textarea>
 
-            <label>
-                Preferred Notification Method:
-                <select name="notification_method">
-                    <option>Email</option>
-                    <option>Text Message</option>
-                    <option>In-App</option>
-                </select>
-            </label>
+                <label>Feature Request</label>
+                <textarea name="feature_request"></textarea>
 
-            <button type="submit" class="button">Save Settings</button>
-        </form>
-    </section>
+                <label>Rate Us</label>
+                <div class="rating-stars">
+                    {% for i in "12345" %}
+                        <span class="star">★</span>
+                    {% endfor %}
+                </div>
 
-    <section class="card">
-        <h2>Feedback</h2>
-        <form method="POST">
-            {% csrf_token %}
+                <button class="primary-btn">Submit Feedback</button>
+            </form>
+        </section>
 
-            <label>Your Rating</label>
-            <input type="number" name="rating" min="1" max="5">
 
-            <label>Feedback</label>
-            <textarea name="feedback" placeholder="Tell us how we can improve..."></textarea>
+        <!-- NOTIFICATION SETTINGS -->
+        <section class="card">
+            <h2 class="section-title">Notifications</h2>
 
-            <label>Feature Requests</label>
-            <textarea name="feature_request" placeholder="What would you like to see next?"></textarea>
+            <div class="toggle-item">
+                <span>Burnout Risk Alerts</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
 
-            <button type="submit" class="button">Submit Feedback</button>
-        </form>
-    </section>
+            <div class="toggle-item">
+                <span>Astrological Events</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
 
-</div>
+            <div class="toggle-item">
+                <span>Device Sync</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-item">
+                <span>Astrology Features</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <label>Notification Method</label>
+            <select>
+                <option>Email</option>
+                <option>SMS</option>
+                <option>App Notification</option>
+            </select>
+        </section>
+
+
+        <!-- PRIVACY SETTINGS -->
+        <section class="card">
+            <h2 class="section-title">Privacy & Data</h2>
+
+            <div class="toggle-item">
+                <span>Share Data for Research</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </section>
+
+
+        <!-- APPEARANCE -->
+        <section class="card">
+            <h2 class="section-title">Appearance</h2>
+
+            <div class="toggle-item">
+                <span>Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </section>
+
+
+        <!-- WEARABLE DEVICES -->
+        <section class="card">
+            <h2 class="section-title">Wearable Devices</h2>
+            <p class="section-sub">Manage your connected health devices.</p>
+
+            <div class="device-list">
+                <div class="device-row">
+                    <strong>Fitbit Charge 5</strong>
+                    <span class="device-status active">Active</span>
+                </div>
+
+                <div class="device-row">
+                    <strong>Apple Watch</strong>
+                    <span class="device-status inactive">Inactive</span>
+                </div>
+
+                <button class="primary-btn add-btn">+ Add Device</button>
+            </div>
+        </section>
+
+    </main>
 
 </body>
 </html>
-
-

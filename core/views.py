@@ -1,8 +1,36 @@
+# ---------------------------------------------------
+# FEEDBACK VIEW
+# ---------------------------------------------------
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def submit_feedback(request):
+    if request.method == "POST":
+        feedback = request.POST.get("feedback", "")
+        feature_request = request.POST.get("feature_request", "")
+        rating = request.POST.get("rating", None)
+        # Use demo profile (id=1) for feedback association
+        try:
+            profile = UserProfile.objects.get(id=1)
+        except UserProfile.DoesNotExist:
+            profile = None
+        if profile:
+            UserFeedback.objects.create(
+                user_profile=profile,
+                rating=int(rating) if rating else 0,
+                comments=feedback,
+                feature_requests=feature_request
+            )
+            messages.success(request, "Thank you for your feedback!")
+        else:
+            messages.error(request, "User profile not found. Feedback not saved.")
+        return redirect("settings")
+    return redirect("settings")
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from datetime import date
 
 from .models import (
@@ -22,6 +50,18 @@ from core.api.transits import get_transit_alerts
 # LOGIN VIEW
 # ---------------------------------------------------
 def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect("dashboard")
+        else:
+            messages.error(request, "Invalid username or password.")
+
     return render(request, "core/login.html")
 
 # ---------------------------------------------------
@@ -35,11 +75,12 @@ def logout_view(request):
 # ---------------------------------------------------
 # HELPERS
 # ---------------------------------------------------
-def get_active_profile():
-    """Always returns the first user profile (demo mode)."""
-    profile = UserProfile.objects.get(id=1)
-    return profile
+def get_active_profile(request):
+    """Return the logged-in user's profile."""
+    if not request.user.is_authenticated:
+        return None
 
+    return UserProfile.objects.filter(user=request.user).first()
 
 
 def compute_transit_pressure(transits):
@@ -195,19 +236,52 @@ def natal_chart_view(request, full_name):
 # ---------------------------------------------------
 def registration_view(request):
     if request.method == "POST":
+        full_name = request.POST.get("full_name")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone")
+        password = request.POST.get("password")
 
-        profile = UserProfile.objects.create(
-            full_name=request.POST.get("full_name"),
-            email=request.POST.get("email"),
-            phone=request.POST.get("phone"),
-            birth_date=request.POST.get("dob"),
-            birth_time=request.POST.get("tob"),
-            birth_city=request.POST.get("birth_city"),
-            birth_latitude=request.POST.get("birth_latitude"),
-            birth_longitude=request.POST.get("birth_longitude"),
-            birth_timezone=request.POST.get("birth_timezone"),
+        birth_date = request.POST.get("dob") or None
+        birth_time = request.POST.get("tob") or None
+        birth_city = request.POST.get("birth_city")
+        birth_state = request.POST.get("birth_state")
+        birth_country = request.POST.get("birth_country")
+        birth_latitude = request.POST.get("birth_latitude") or None
+        birth_longitude = request.POST.get("birth_longitude") or None
+        birth_timezone = request.POST.get("birth_timezone") or None
+        wearable_device_type = request.POST.get("wearable_device_type")
+
+        if not email or not password:
+            messages.error(request, "Email and password are required.")
+            return render(request, "core/registration.html")
+
+        if User.objects.filter(username=email).exists():
+            messages.error(request, "An account with this email already exists.")
+            return render(request, "core/registration.html")
+
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password
         )
 
+        UserProfile.objects.create(
+            user=user,
+            full_name=full_name,
+            email=email,
+            phone=phone,
+            birth_date=birth_date,
+            birth_time=birth_time,
+            birth_city=birth_city,
+            birth_state=birth_state,
+            birth_country=birth_country,
+            birth_latitude=birth_latitude,
+            birth_longitude=birth_longitude,
+            birth_timezone=birth_timezone,
+            wearable_device_type=wearable_device_type,
+        )
+
+        login(request, user)
         messages.success(request, "Registration complete!")
         return redirect("dashboard")
 

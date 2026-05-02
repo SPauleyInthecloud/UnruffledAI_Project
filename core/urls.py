@@ -9,9 +9,11 @@ from .views import (
     settings_view,
     login_view,
     logout_view,
+    submit_feedback,
 )
 
 urlpatterns = [
+    path('', login_view, name='home'),
     path("register/", registration_view, name="register"),
     path("dashboard/", dashboard_view, name="dashboard"),
     path("add-biometric/", add_biometric_view, name="add_biometric"),
@@ -21,5 +23,6 @@ urlpatterns = [
     path("settings/", settings_view, name="settings"),
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
+    path("submit-feedback/", submit_feedback, name="submit_feedback"),
 ]
 

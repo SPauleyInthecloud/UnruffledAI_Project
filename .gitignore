@@ -8,53 +8,72 @@ __pycache__/
 # Django
 *.log
 *.pot
-*.pyc
 *.sqlite3
+db.sqlite3
 /staticfiles/
 /media/
 
-# Virtualenv
-venv/
+# Environment / Secrets
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.csr
+secrets.json
+aws_credentials/
 
-# VS Code
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# IDEs
 .vscode/
+.idea/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Model files
+# ML / Model Artifacts
 core/model_files/*.keras
 core/model_files/*.pkl
+*.h5
+*.pb
+saved_model/
+mlruns/
 
 # Docker
 *.pid
-
-# AWS
-*.pem
-
-# Misc
-*.bak
-*.swp
-*.swo
+docker-compose.override.yml
 
 # Node
 node_modules/
 
-# Test coverage
+# Testing / Coverage
 htmlcov/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
+pytest_cache/
 test-results/
 
 # Jupyter
-.ipynb_checkpoints
+.ipynb_checkpoints/
 *.ipynb
 
-# Other
+# Build / Distribution
+build/
+dist/
+*.egg-info/
+
+# Misc
+*.bak
+*.swp
+*.swo
 *.orig
 *.rej

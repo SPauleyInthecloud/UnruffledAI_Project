@@ -5,110 +5,128 @@
     <meta charset="UTF-8">
     <title>Dashboard • UnruffledAI</title>
 
-    <!-- Core Theme Styles (same as login) -->
-    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="dark-bg">
+<body>
 
-<!-- NAVIGATION BAR -->
-<header class="navbar">
+<!-- ▬▬▬ TOP NAVIGATION (Option B Layout) ▬▬▬ -->
+<nav class="top-nav">
     <div class="nav-left">
-        <img src="{% static 'img/logo.png' %}" class="nav-logo">
-        <span class="nav-title">UnruffledAI</span>
+        <img src="{% static 'img/unruffled_logo.png' %}" class="logo">
+        <span class="brand-name">UnruffledAI</span>
     </div>
 
-    <nav class="nav-links">
+    <div class="nav-links">
         <a href="/dashboard/" class="active">Dashboard</a>
         <a href="/reports/">Reports</a>
         <a href="/natal/{{ profile.full_name }}/">Natal Chart</a>
         <a href="/settings/">Settings</a>
-        <a href="/logout/" class="logout-btn">Logout</a>
-    </nav>
-</header>
+        <a href="/logout/">Logout</a>
+    </div>
+</nav>
 
 
-<!-- MAIN DASHBOARD CONTENT -->
-<div class="dashboard-wrapper">
 
-    <!-- Greeting -->
-    <h1 class="welcome-text">Good afternoon, {{ profile.full_name }}</h1>
+<!-- ▬▬▬ PAGE HEADER ▬▬▬ -->
+<div class="dashboard-header">
+    <h1>Welcome back, {{ profile.full_name }}</h1>
     <p class="sub-text">Here’s your wellness overview for today</p>
 
-    <button id="openBiometricModal" class="primary-btn">+ Add Biometric Data</button>
+    <button id="openBiometricModal" class="add-btn">+ Add Biometric Data</button>
+</div>
 
 
-    <!-- CARD GRID -->
-    <div class="grid-container">
 
-        <!-- Burnout Gauge Card -->
-        <div class="card">
-            <h2 class="card-title">Your Burnout Risk</h2>
-            <canvas id="burnoutGauge" class="gauge"></canvas>
-            <p class="gauge-score">{{ combined_risk }}%</p>
-        </div>
+<!-- ▬▬▬ GRID LAYOUT ▬▬▬ -->
+<div class="dashboard-grid">
 
-        <!-- Biometrics -->
-        <div class="card">
-            <h2 class="card-title">Latest Biometrics</h2>
+    <!-- ▬▬ CARD 1: FITNESS RING ▬▬ -->
+    <div class="card">
+        <h2>Your Burnout Risk</h2>
 
-            {% if latest_biometric %}
-            <ul class="info-list">
-                <li><span>Heart Rate:</span> {{ latest_biometric.heart_rate }} bpm</li>
-                <li><span>HRV Score:</span> {{ latest_biometric.hrv_score }}</li>
-                <li><span>Sleep Hours:</span> {{ latest_biometric.sleep_hours }}</li>
-                <li><span>Stress Level:</span> {{ latest_biometric.stress_level }}</li>
-            </ul>
-            {% else %}
-            <p class="empty-text">No biometric data available yet.</p>
-            {% endif %}
-        </div>
+        <canvas id="burnoutRing" class="fitness-ring"></canvas>
 
-        <!-- AI Prediction -->
-        <div class="card">
-            <h2 class="card-title">Latest AI Prediction</h2>
+        <p style="text-align:center; font-size:1.1rem; margin-top:10px;">
+            <strong>{{ combined_risk }}%</strong>
+        </p>
+    </div>
 
-            {% if latest_prediction %}
-                <p><strong>Burnout Level:</strong> {{ latest_prediction.predicted_burnout_level }}</p>
-                <p><strong>Risk Score:</strong> {{ latest_prediction.prediction_burnout_risk|floatformat:2 }}%</p>
-                <p><strong>Factors:</strong> {{ latest_prediction.contributing_factors }}</p>
 
-                <a href="{{ latest_prediction.meditation_link }}" class="link-btn" target="_blank">
-                    View meditation resource
-                </a>
+    <!-- ▬▬ CARD 2: LATEST BIOMETRICS ▬▬ -->
+    <div class="card">
+        <h2>Latest Biometrics</h2>
 
-            {% else %}
-                <p class="empty-text">No predictions yet.</p>
-            {% endif %}
-        </div>
+        {% if latest_biometric %}
+        <ul class="info-list">
+            <li><strong>Heart Rate:</strong> {{ latest_biometric.heart_rate }} bpm</li>
+            <li><strong>Sleep Quality:</strong> {{ latest_biometric.sleep_quality }}</li>
+            <li><strong>Sleep Duration:</strong> {{ latest_biometric.sleep_duration }} hrs</li>
+            <li><strong>Stress Level:</strong> {{ latest_biometric.stress_level }}</li>
+        </ul>
+        <p style="margin-top:10px; color:#6b7a89;">Last updated: {{ latest_biometric.timestamp }}</p>
+        {% else %}
+        <p>No biometric data available yet.</p>
+        {% endif %}
+    </div>
 
-        <!-- Transit Alerts -->
-        <div class="card">
-            <h2 class="card-title">Astrological Transit Alerts</h2>
 
-            {% if transit_alerts %}
-                <ul class="info-list">
-                    {% for t in transit_alerts %}
-                        <li>
-                            <strong>{{ t.transit_planet }}</strong> entering House {{ t.natal_house }}
-                            <div class="transit-desc">{{ t.description }}</div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="empty-text">No active transits today.</p>
+    <!-- ▬▬ CARD 3: PREDICTIONS ▬▬ -->
+    <div class="card">
+        <h2>Latest AI Prediction</h2>
+
+        {% if latest_prediction %}
+            <p><strong>Burnout Risk:</strong> {{ latest_prediction.prediction_burnout_risk|floatformat:2 }}%</p>
+
+            <p class="prediction-label">Level: {{ latest_prediction.predicted_burnout_level }}</p>
+
+            <p><strong>Contributing Factors:</strong><br>{{ latest_prediction.contributing_factors }}</p>
+
+            <p><strong>Recommendations:</strong><br>
+               {{ latest_prediction.recommendations }}
+            </p>
+
+            {% if latest_prediction.meditation_link %}
+            <a href="{{ latest_prediction.meditation_link }}"
+               target="_blank"
+               class="link-btn">View meditation resource</a>
             {% endif %}
 
-            <a href="/share-team/" class="share-link">Share with your team →</a>
-        </div>
+            <p style="margin-top:10px; color:#6b7a89;">Generated: {{ latest_prediction.prediction_date }}</p>
 
+        {% else %}
+            <p>No predictions yet.</p>
+        {% endif %}
+    </div>
+
+
+    <!-- ▬▬ CARD 4: ALERTS ▬▬ -->
+    <div class="card">
+        <h2>Recent Alerts</h2>
+
+        {% if transit_alerts %}
+            {% for t in transit_alerts %}
+            <div class="alert-card">
+                <div class="alert-title">{{ t.alert_type }}</div>
+
+                <p>{{ t.description }}</p>
+
+                <p style="margin-top:8px; font-size:0.9rem;">{{ t.timestamp }}</p>
+
+                <a href="/share-team/" class="share-link">Share with team →</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No recent alerts.</p>
+        {% endif %}
     </div>
 
 </div>
 
 
-<!-- BIOMETRIC MODAL -->
+
+<!-- ▬▬▬ MODAL: Add Biometric Data ▬▬▬ -->
 <div id="biometricModal" class="modal">
     <div class="modal-content">
         <h2>Add Biometric Data</h2>
@@ -119,21 +137,18 @@
             <label>Heart Rate</label>
             <input type="number" name="heart_rate" required>
 
-            <label>HRV Score</label>
-            <input type="number" name="hrv_score" required>
+            <label>Sleep Quality</label>
+            <input type="text" name="sleep_quality" required>
 
-            <label>Sleep Hours</label>
-            <input type="number" name="sleep_hours" required>
-
-            <label>Activity Level</label>
-            <input type="number" name="activity_level" required>
+            <label>Sleep Duration (hours)</label>
+            <input type="number" name="sleep_duration" required>
 
             <label>Stress Level</label>
-            <input type="number" name="stress_index" required>
+            <input type="number" name="stress_level" required>
 
             <div class="modal-buttons">
-                <button class="primary-btn" type="submit">Save</button>
-                <button class="secondary-btn" type="button" id="closeBiometricModal">Cancel</button>
+                <button type="button" id="closeBiometricModal" class="secondary-btn">Cancel</button>
+                <button type="submit" class="primary-btn">Save</button>
             </div>
         </form>
     </div>
@@ -141,29 +156,36 @@
 
 
 
-<!-- SCRIPTS -->
+<!-- ▬▬▬ JS SCRIPTS ▬▬▬ -->
 <script>
-new Chart(document.getElementById("burnoutGauge"), {
+/* ▬▬ APPLE FITNESS RING ▬▬ */
+const ctx = document.getElementById("burnoutRing");
+new Chart(ctx, {
     type: "doughnut",
     data: {
         datasets: [{
-            data: [{{ combined_risk }}, {{ remaining_risk }}],
-            backgroundColor: ["#ff6d6d", "rgba(255,255,255,0.1)"],
-            borderWidth: 0
+            data: [{{ combined_risk }}, 100 - {{ combined_risk }}],
+            backgroundColor: ["#ffcc00", "#e5ecf0"],
+            borderWidth: 0,
         }]
     },
     options: {
-        cutout: "30%",
-        plugins: { legend: { display: false } }
+        cutout: "75%",
+        plugins: {
+            legend: { display: false }
+        }
     }
 });
 
-// Modal logic
+/* ▬▬ MODAL LOGIC ▬▬ */
 const modal = document.getElementById("biometricModal");
 document.getElementById("openBiometricModal").onclick = () => modal.style.display = "flex";
 document.getElementById("closeBiometricModal").onclick = () => modal.style.display = "none";
+
+window.onclick = function(e){
+    if (e.target === modal){ modal.style.display = "none"; }
+}
 </script>
 
 </body>
 </html>
-
