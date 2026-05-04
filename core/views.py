@@ -30,7 +30,8 @@ def submit_feedback(request):
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.auth import logout, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from datetime import date
 
 from .models import (
@@ -99,7 +100,7 @@ def compute_transit_pressure(transits):
 # DASHBOARD
 # ---------------------------------------------------
 def dashboard_view(request):
-    profile = get_active_profile()
+    profile = get_active_profile(request)
 
     latest_bio = BiometricData.objects.order_by("-timestamp").first()
     latest_ai = AIPrediction.objects.order_by("-prediction_date").first()
@@ -142,7 +143,7 @@ def dashboard_view(request):
 # REPORTS
 # ---------------------------------------------------
 def burnout_report_view(request):
-    profile = get_active_profile()
+    profile = get_active_profile(request)
     predictions = AIPrediction.objects.filter(user_profile=profile).order_by("-prediction_date")
 
     dates = [p.prediction_date.strftime("%Y-%m-%d") for p in predictions]
@@ -292,7 +293,7 @@ def registration_view(request):
 # SETTINGS
 # ---------------------------------------------------
 def settings_view(request):
-    profile = get_active_profile()
+    profile = get_active_profile(request)
 
     user_pref, _ = UserPreference.objects.get_or_create(user_profile=profile)
 
@@ -324,7 +325,7 @@ def settings_view(request):
 # DARK MODE
 # ---------------------------------------------------
 def toggle_dark_mode_view(request):
-    profile = get_active_profile()
+    profile = get_active_profile(request)
 
     user_pref, _ = UserPreference.objects.get_or_create(user_profile=profile)
     value = request.POST.get("dark_mode")
@@ -340,7 +341,7 @@ def toggle_dark_mode_view(request):
 # ---------------------------------------------------
 def add_biometric_view(request):
     if request.method == "POST":
-        profile = get_active_profile()
+        profile = get_active_profile(request)
 
         BiometricData.objects.create(
             user_profile=profile,
@@ -361,7 +362,7 @@ def add_biometric_view(request):
 # AI BURNOUT API
 # ---------------------------------------------------
 def burnout_api(request):
-    profile = get_active_profile()
+    profile = get_active_profile(request)
 
     category, score = predict_burnout(
         heart_rate=int(request.GET.get("heart_rate")),

@@ -54,22 +54,22 @@
     </div>
 
 
-    <!-- ▬▬ CARD 2: LATEST BIOMETRICS ▬▬ -->
-    <div class="card">
-        <h2>Latest Biometrics</h2>
+<!-- ▬▬ CARD 2: LATEST BIOMETRICS ▬▬ -->
+<div class="card">
+    <h2>Latest Biometrics</h2>
 
-        {% if latest_biometric %}
-        <ul class="info-list">
-            <li><strong>Heart Rate:</strong> {{ latest_biometric.heart_rate }} bpm</li>
-            <li><strong>Sleep Quality:</strong> {{ latest_biometric.sleep_quality }}</li>
-            <li><strong>Sleep Duration:</strong> {{ latest_biometric.sleep_duration }} hrs</li>
-            <li><strong>Stress Level:</strong> {{ latest_biometric.stress_level }}</li>
-        </ul>
-        <p style="margin-top:10px; color:#6b7a89;">Last updated: {{ latest_biometric.timestamp }}</p>
-        {% else %}
-        <p>No biometric data available yet.</p>
-        {% endif %}
-    </div>
+    {% if latest_biometric %}
+    <ul class="info-list">
+        <li><strong>Heart Rate:</strong> {{ latest_biometric.heart_rate|default:"Not entered" }} bpm</li>
+        <li><strong>HRV Score:</strong> {{ latest_biometric.hrv_score|default:"Not entered" }}</li>
+        <li><strong>Sleep Duration:</strong> {{ latest_biometric.sleep_hours|default:"Not entered" }} hrs</li>
+        <li><strong>Stress Level:</strong> {{ latest_biometric.stress_level|default:"Not entered" }}</li>
+    </ul>
+    <p style="margin-top:10px; color:#6b7a89;">Last updated: {{ latest_biometric.timestamp }}</p>
+    {% else %}
+    <p>No biometric data available yet.</p>
+    {% endif %}
+</div>
 
 
     <!-- ▬▬ CARD 3: PREDICTIONS ▬▬ -->
