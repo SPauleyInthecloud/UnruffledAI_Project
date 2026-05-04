@@ -349,7 +349,7 @@ def add_biometric_view(request):
             hrv_score=request.POST.get("hrv_score"),
             sleep_hours=request.POST.get("sleep_hours"),
             activity_level=request.POST.get("activity_level"),
-            stress_level=request.POST.get("stress_index"),
+            stress_level=request.POST.get("stress_level"),
         )
 
         messages.success(request, "Biometric data added!")
