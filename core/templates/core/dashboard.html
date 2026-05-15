@@ -62,7 +62,7 @@
     <ul class="info-list">
         <li><strong>Heart Rate:</strong> {{ latest_biometric.heart_rate|default:"Not entered" }} bpm</li>
         <li><strong>HRV Score:</strong> {{ latest_biometric.hrv_score|default:"Not entered" }}</li>
-        <li><strong>Sleep Duration:</strong> {{ latest_biometric.sleep_hours|default:"Not entered" }} hrs</li>
+        <li><strong>Sleep Duration:</strong> {{ latest_biometric.sleep_hours|default:"Not entered" }} hours</li>
         <li><strong>Stress Level:</strong> {{ latest_biometric.stress_level|default:"Not entered" }}</li>
     </ul>
     <p style="margin-top:10px; color:#6b7a89;">Last updated: {{ latest_biometric.timestamp }}</p>
@@ -137,11 +137,11 @@
             <label>Heart Rate</label>
             <input type="number" name="heart_rate" required>
 
-            <label>Sleep Quality</label>
-            <input type="text" name="sleep_quality" required>
+            <label>HRV Score</label>
+            <input type="number" name="hrv_score" required>
 
             <label>Sleep Duration (hours)</label>
-            <input type="number" name="sleep_duration" required>
+            <input type="number" step="0.1" name="sleep_hours" required>
 
             <label>Stress Level</label>
             <input type="number" name="stress_level" required>
